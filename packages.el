@@ -1,4 +1,4 @@
-(setq c-c++-ide-packages
+(setq cc-ide-packages
       '(
         cc-mode
         cmake-ide
@@ -14,11 +14,11 @@
         helm-cscope
         ))
 
-(defun c-c++-ide/init-cc-mode ()
+(defun cc-ide/init-cc-mode ()
   (use-package cc-mode
     :defer t
     :init
-    (add-to-list 'auto-mode-alist `("\\.h$" . ,c-c++-default-mode-for-headers))
+    ;; (add-to-list 'auto-mode-alist `("\\.h$" . ,c-c++-default-mode-for-headers))
     :config
     (progn
       (require 'compile)
@@ -30,13 +30,13 @@
         "ga" 'projectile-find-other-file
         "gA" 'projectile-find-other-file-other-window))))
 
-(defun c-c++-ide/init-cmake-ide ()
+(defun cc-ide/init-cmake-ide ()
   (cmake-ide-setup))
 
-(defun c-c++-ide/post-init-company ()
+(defun cc-ide/post-init-company ()
   (spacemacs|add-company-hook c-mode-common))
 
-(defun c-c++-ide/init-irony ()
+(defun cc-ide/init-irony ()
   (use-package irony
     :defer t
     :commands (irony-mode irony-install-server)
@@ -46,8 +46,6 @@
       (add-hook 'c++-mode-hook 'irony-mode))
     :config
     (progn
-      (setq irony-user-dir (f-slash (f-join user-home-directory "bin" "irony")))
-      (setq irony-server-install-prefix irony-user-dir)
       (add-hook 'c++-mode-hook (lambda () (setq irony-additional-clang-options '("-std=c++11"))))
       (defun irony/irony-mode-hook ()
         (define-key irony-mode-map [remap completion-at-point] 'irony-completion-at-point-async)
@@ -57,7 +55,7 @@
       (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))))
 
 (when (configuration-layer/layer-usedp 'auto-completion)
-  (defun c-c++-ide/init-company-irony ()
+  (defun cc-ide/init-company-irony ()
     (use-package company-irony
       :if (configuration-layer/package-usedp 'company)
       :commands (company-irony)
@@ -68,7 +66,7 @@
         (add-to-list 'company-backends 'company-irony)))))
 
 (when (configuration-layer/layer-usedp 'auto-completion)
-  (defun c-c++-ide/init-company-irony-c-headers ()
+  (defun cc-ide/init-company-irony-c-headers ()
     (use-package company-irony-c-headers
       :if (configuration-layer/package-usedp 'company)
       :defer t
@@ -76,24 +74,24 @@
       :init
       (push 'company-irony-c-headers company-backends-c-mode-common))))
 
-(defun c-c++-ide/init-irony-eldoc ()
+(defun cc-ide/init-irony-eldoc ()
   (use-package irony-eldoc
     :commands (irony-eldoc)
     :init
     (add-hook 'irony-mode-hook 'irony-eldoc)))
 
-(defun c-c++-ide/post-init-flycheck ()
+(defun cc-ide/post-init-flycheck ()
   (dolist (mode '(c-mode c++-mode))
     (spacemacs/add-flycheck-hook mode)))
 
 (when (configuration-layer/layer-usedp 'syntax-checking)
-  (defun c-c++-ide/init-flycheck-irony ()
+  (defun cc-ide/init-flycheck-irony ()
     (use-package flycheck-irony
       :if (configuration-layer/package-usedp 'flycheck)
       :defer t
       :init (add-hook 'irony-mode-hook 'flycheck-irony-setup))))
 
-(defun c-c++-ide/init-rtags ()
+(defun cc-ide/init-rtags ()
   (use-package rtags
     :defer t
     :init
@@ -103,14 +101,14 @@
       (rtags-enable-standard-keybindings)
       (setq rtags-use-helm t))))
 
-(defun c-c++-ide/pre-init-xcscope ()
+(defun cc-ide/pre-init-xcscope ()
   (spacemacs|use-package-add-hook xcscope
     :post-init
     (dolist (mode '(c-mode c++-mode))
       (spacemacs/set-leader-keys-for-major-mode mode "gi" 'cscope-index-files))))
 
 (when (configuration-layer/layer-usedp 'spacemacs-helm)
-  (defun c-c++-ide/pre-init-helm-cscope ()
+  (defun cc-ide/pre-init-helm-cscope ()
     (spacemacs|use-package-add-hook xcscope
       :post-init
       (dolist (mode '(c-mode c++-mode))
